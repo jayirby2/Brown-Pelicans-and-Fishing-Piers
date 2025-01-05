@@ -1,0 +1,502 @@
+---
+title: "Brown Pelicans and Fishing Piers: A Comparative Analysis of Rehabilitation  - Jay Irby"
+output:
+  html_document: default
+  pdf_document: default
+date: "2024-12-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Loading the data
+```{r}
+data <- read.csv("PelicanMonthlyR8.csv")
+dim(data)
+```
+
+Creating the models
+
+Import MASS
+```{r}
+# Importing MASS package
+library(MASS)
+```
+
+Model for Total birds from both Skyway and Other areas (Total)
+```{r}
+summary(data$Total) 
+mean_Total <- mean(data$TOTAL)
+variance_Total <- (sd(data$TOTAL))^2
+if (variance_Total > mean_Total) {
+  print("Data is overdispersed")
+}
+
+plot(density(data$TOTAL, na.rm = TRUE), 
+     main = "Density Plot of Total", 
+     xlab = "Total", 
+     col = "black", 
+     lwd = 3)
+
+model_Total <- glm.nb(TOTAL ~  TotalBedM + avgWindkm + maxwindkm + avgAirC, data = data)
+summary(model_Total)
+
+# Plotting Residuals
+residuals <- residuals(model_Total)
+plot(fitted(model_Total), residuals, main = "Plot of Residuals vs. Fits", 
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lwd = 3)
+
+# Creating normal probability plot
+qqnorm(residuals, main = "Q-Q Plot of Residuals")
+qqline(residuals, col = "red", lwd = 3)
+
+# Calculating Nagelkerke's R^2
+(n <- length(data$TOTAL))
+null_model <- glm.nb(TOTAL ~ 1, data = data)
+cox_snell_r2 <- 1 - exp((2 / n) * (logLik(null_model) - logLik(model_Total)))
+(nagelkerke_r2 <- cox_snell_r2 / (1 - exp((2 / n) * logLik(null_model))))
+```
+
+Model for  birds from the Skyway (Skyway)
+```{r}
+summary(data$Skyway) 
+mean_Skyway <- mean(data$Skyway)
+variance_Skyway <- (sd(data$Skyway))^2
+if (variance_Skyway > mean_Skyway) {
+  print("Data is overdispersed")
+}
+
+plot(density(data$Skyway, na.rm = TRUE), 
+     main = "Density Plot of Skyway", 
+     xlab = "Skyway", 
+     col = "black", 
+     lwd = 3)
+
+model_Skyway <- glm.nb(Skyway ~  skyvisitorK + avgWindkm + maxwindkm + avgAirC, data = data)
+summary(model_Skyway)
+
+# Plotting Residuals
+residuals <- residuals(model_Skyway)
+plot(fitted(model_Skyway), residuals, main = "Plot of Residuals vs. Fits", 
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lwd = 3)
+
+# Creating normal probability plot
+qqnorm(residuals, main = "Q-Q Plot of Residuals")
+qqline(residuals, col = "red", lwd = 3)
+
+# Calculating Nagelkerke's R^2
+(n <- length(data$Skyway))
+null_model <- glm.nb(Skyway ~ 1, data = data)
+cox_snell_r2 <- 1 - exp((2 / n) * (logLik(null_model) - logLik(model_Skyway)))
+(nagelkerke_r2 <- cox_snell_r2 / (1 - exp((2 / n) * logLik(null_model))))
+```
+
+
+Model for all other birds (Other)
+```{r}
+summary(data$Other) 
+(mean_Other <- mean(data$Other))
+(variance_Other <- (sd(data$Other))^2)
+if (variance_Other > mean_Other) {
+  print("Data is overdispersed")
+}
+
+plot(density(data$Other, na.rm = TRUE), 
+     main = "Density Plot of Other", 
+     xlab = "OtherAd", 
+     col = "black", 
+     lwd = 3)
+
+model_Other <- glm.nb(Other ~ TotalBedM  + avgWindkm + maxwindkm + avgAirC, data = data)
+summary(model_Other)
+
+# Plotting Residuals
+residuals <- residuals(model_Other)
+plot(fitted(model_Other), residuals, main = "Plot of Residuals vs. Fits", 
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lwd = 3)
+
+# Creating normal probability plot
+qqnorm(residuals, main = "Q-Q Plot of Residuals")
+qqline(residuals, col = "red", lwd = 3)
+
+# Calculating Nagelkerke's R^2
+n <- length(data$Other)
+null_model <- glm.nb(Other ~ 1, data = data)
+cox_snell_r2 <- 1 - exp((2 / n) * (logLik(null_model) - logLik(model_Other)))
+(nagelkerke_r2 <- cox_snell_r2 / (1 - exp((2 / n) * logLik(null_model))))
+```
+
+
+Model for Fishing (Fishing)
+```{r}
+summary(data$Fishing) 
+(mean_Fishing <- mean(data$Fishing))
+(variance_Fishing <- (sd(data$Fishing))^2)
+if (variance_Fishing > mean_Fishing) {
+  print("Data is overdispersed")
+}
+
+plot(density(data$Fishing, na.rm = TRUE), 
+     main = "Density Plot of Fishing", 
+     xlab = "Fishing", 
+     col = "black", 
+     lwd = 3)
+
+model_Fishing <- glm.nb(Fishing ~ TotalBedM + avgWindkm + maxwindkm + avgAirC, data = data)
+summary(model_Fishing)
+
+# Plotting Residuals
+residuals <- residuals(model_Fishing)
+plot(fitted(model_Fishing), residuals, main = "Plot of Residuals vs. Fits", 
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lwd = 3)
+
+# Creating normal probability plot
+qqnorm(residuals, main = "Q-Q Plot of Residuals")
+qqline(residuals, col = "red", lwd = 3)
+
+
+# Calculating Nagelkerke's R^2
+n <- length(data$Fishing)
+null_model <- glm.nb(Fishing ~ 1, data = data)
+cox_snell_r2 <- 1 - exp((2 / n) * (as.numeric(logLik(null_model)) - as.numeric(logLik(model_Fishing))))
+(nagelkerke_r2 <- cox_snell_r2 / (1 - exp((2 / n) * as.numeric(logLik(null_model)))))
+```
+
+Model for Dehydration and Emancipation (DehyEmaci)
+```{r}
+summary(data$DehyEmaci) 
+(mean_DehyEmaci <- mean(data$DehyEmaci))
+(variance_DehyEmaci <- (sd(data$DehyEmaci))^2)
+if (variance_DehyEmaci > mean_DehyEmaci) {
+  print("Data is overdispersed")
+}
+
+plot(density(data$DehyEmaci, na.rm = TRUE), 
+     main = "Density Plot of DehyEmaci", 
+     xlab = "DehyEmaci", 
+     col = "black", 
+     lwd = 3)
+
+model_DehyEmaci <- glm.nb(DehyEmaci ~ TotalBedM  + avgWindkm + maxwindkm + avgAirC, data = data)
+summary(model_DehyEmaci)
+
+# Plotting Residuals
+residuals <- residuals(model_DehyEmaci)
+plot(fitted(model_DehyEmaci), residuals, main = "Plot of Residuals vs. Fits", 
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lwd = 3)
+
+# Creating normal probability plot
+qqnorm(residuals, main = "Q-Q Plot of Residuals")
+qqline(residuals, col = "red", lwd = 3)
+
+# Calculating Nagelkerke's R^2
+n <- length(data$DehyEmaci)
+null_model <- glm.nb(DehyEmaci ~ 1, data = data)
+cox_snell_r2 <- 1 - exp((2 / n) * (as.numeric(logLik(null_model)) - as.numeric(logLik(model_DehyEmaci))))
+(nagelkerke_r2 <- cox_snell_r2 / (1 - exp((2 / n) * as.numeric(logLik(null_model)))))
+```
+
+
+Model for Trauma (Trauma)
+```{r}
+summary(data$Trauma) 
+(mean_Trauma <- mean(data$Trauma))
+(variance_Trauma <- (sd(data$Trauma))^2)
+if (variance_Trauma > mean_Trauma) {
+  print("Data is overdispersed")
+}
+
+plot(density(data$Trauma, na.rm = TRUE), 
+     main = "Density Plot of Trauma", 
+     xlab = "Trauma", 
+     col = "black", 
+     lwd = 3)
+
+model_Trauma <- glm.nb(Trauma ~ TotalBedM  + avgWindkm + maxwindkm + avgAirC, data = data)
+summary(model_Trauma)
+
+# Plotting Residuals
+residuals <- residuals(model_Trauma)
+plot(fitted(model_Trauma), residuals, main = "Plot of Residuals vs. Fits", 
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lwd = 3)
+
+# Creating normal probability plot
+qqnorm(residuals, main = "Q-Q Plot of Residuals")
+qqline(residuals, col = "red", lwd = 3)
+
+# Calculating Nagelkerke's R^2
+n <- length(data$Trauma)
+null_model <- glm.nb(Trauma ~ 1, data = data)
+cox_snell_r2 <- 1 - exp((2 / n) * (as.numeric(logLik(null_model)) - as.numeric(logLik(model_Trauma))))
+(nagelkerke_r2 <- cox_snell_r2 / (1 - exp((2 / n) * as.numeric(logLik(null_model)))))
+```
+
+
+Model for Toxins (Toxins)
+```{r}
+summary(data$Toxins) 
+(mean_Toxins <- mean(data$Toxins))
+(variance_Toxins <- (sd(data$Toxins))^2)
+if (variance_Toxins > mean_Toxins) {
+  print("Data is overdispersed")
+}
+
+plot(density(data$Toxins, na.rm = TRUE), 
+     main = "Density Plot of Toxins", 
+     xlab = "Toxins", 
+     col = "black", 
+     lwd = 3)
+
+
+model_Toxins <- glm.nb(Toxins ~ TotalBedM  + avgWindkm + maxwindkm + avgAirC, data = data)
+summary(model_Toxins)
+
+# Plotting Residuals
+residuals <- residuals(model_Toxins)
+plot(fitted(model_Toxins), residuals, main = "Plot of Residuals vs. Fits", 
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lwd = 3)
+
+# Creating normal probability plot
+qqnorm(residuals, main = "Q-Q Plot of Residuals")
+qqline(residuals, col = "red", lwd = 3)
+
+# Calculating Nagelkerke's R^2
+n <- length(data$Toxins)
+null_model <- glm.nb(Toxins ~ 1, data = data)
+cox_snell_r2 <- 1 - exp((2 / n) * (as.numeric(logLik(null_model)) - as.numeric(logLik(model_Toxins))))
+(nagelkerke_r2 <- cox_snell_r2 / (1 - exp((2 / n) * as.numeric(logLik(null_model)))))
+```
+
+Model for pelicans with the diagnosis of unknown or other (unkOther)
+```{r}
+summary(data$unkOther) 
+(mean_unkOther <- mean(data$unkOther))
+(variance_unkOther <- (sd(data$unkOther))^2)
+if (variance_unkOther > mean_unkOther) {
+  print("Data is overdispersed")
+}
+
+plot(density(data$unkOther, na.rm = TRUE), 
+     main = "Density Plot of unkOther", 
+     xlab = "unkOther", 
+     col = "black", 
+     lwd = 3)
+
+
+model_unkOther <- glm.nb(unkOther ~ TotalBedM  + avgWindkm + maxwindkm + avgAirC, data = data)
+summary(model_unkOther)
+
+
+# Plotting Residuals
+residuals <- residuals(model_unkOther)
+plot(fitted(model_Toxins), residuals, main = "Plot of Residuals vs. Fits", 
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lwd = 3)
+
+# Creating normal probability plot
+qqnorm(residuals, main = "Q-Q Plot of Residuals")
+qqline(residuals, col = "red", lwd = 3)
+
+# Calculating Nagelkerke's R^2
+n <- length(data$unkOther)
+null_model <- glm.nb(unkOther ~ 1, data = data)
+cox_snell_r2 <- 1 - exp((2 / n) * (as.numeric(logLik(null_model)) - as.numeric(logLik(model_unkOther))))
+(nagelkerke_r2 <- cox_snell_r2 / (1 - exp((2 / n) * as.numeric(logLik(null_model)))))
+```
+
+
+Making 2 figures, 4 graphs each of predicted marginal effects of the 4 predictor variables. Focusing on Skyway and Other as the two response variables.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(effects)
+library(gridExtra)
+
+# Figure for Skyway
+
+# Visitors Plot
+effect_data <- as.data.frame(effect("skyvisitorK", model_Skyway))
+
+skyway_plot_visitors <- ggplot(effect_data, aes(x = skyvisitorK, y = fit)) +
+    geom_line(size = 1) +  
+    geom_ribbon(aes(ymin = lower, ymax = upper), fill = "green", alpha = 0.3) +
+    labs(x = "Skyway Visitors", y = "Predicted Number of Pelicans") +
+    theme_minimal() +
+    theme(
+      text = element_text(size = 10),  # Increase base font size
+      axis.title = element_text(size = 10),  # Increase axis title font size
+      axis.text = element_text(size = 10),   # Increase axis text font size
+      axis.line = element_line(color = "black", size = 0.8),  # Darken axis lines
+      axis.ticks = element_line(color = "black", size = 0.8) # Darken axis ticks
+    
+    )
+
+skyway_plot_visitors
+
+# Average Wind Plot
+effect_data <- as.data.frame(effect("avgWindkm", model_Skyway))
+
+skyway_plot_avgwind <- ggplot(effect_data, aes(x = avgWindkm, y = fit)) +
+    geom_line(size = 1) +  
+    geom_ribbon(aes(ymin = lower, ymax = upper), fill = "blue", alpha = 0.3) +
+    labs(x = "Average Wind (Km)", y = "Predicted Number of Pelicans") +
+    theme_minimal() +
+    theme(
+      text = element_text(size = 10),  # Increase base font size
+      axis.title = element_text(size = 10),  # Increase axis title font size
+      axis.text = element_text(size = 10),   # Increase axis text font size
+      axis.line = element_line(color = "black", size = 0.8),  # Darken axis lines
+      axis.ticks = element_line(color = "black", size = 0.8) # Darken axis ticks
+     
+    )
+
+skyway_plot_avgwind
+
+# Max Wind Plot
+effect_data <- as.data.frame(effect("maxwindkm", model_Skyway))
+
+skyway_plot_maxwind <- ggplot(effect_data, aes(x = maxwindkm, y = fit)) +
+    geom_line(size = 1) +  
+    geom_ribbon(aes(ymin = lower, ymax = upper), fill = "orange", alpha = 0.3) +
+    labs(x = "Max Wind (Km)", y = "Predicted Number of Pelicans") +
+    theme_minimal() +
+    theme(
+      text = element_text(size = 10),  # Increase base font size
+      axis.title = element_text(size = 10),  # Increase axis title font size
+      axis.text = element_text(size = 10),   # Increase axis text font size
+      axis.line = element_line(color = "black", size = 0.8),  # Darken axis lines
+      axis.ticks = element_line(color = "black", size = 0.8) # Darken axis ticks
+    )
+
+skyway_plot_maxwind
+
+# Avg Air Temp (C) Plot
+effect_data <- as.data.frame(effect("avgAirC", model_Skyway))
+
+skyway_plot_avgtemp <- ggplot(effect_data, aes(x = avgAirC, y = fit)) +
+    geom_line(size = 1) +  
+    geom_ribbon(aes(ymin = lower, ymax = upper), fill = "purple", alpha = 0.3) +
+    labs(x = "Average Air Temperature (°C)", y = "Predicted Number of Pelicans") +
+    theme_minimal() +
+    theme(
+      text = element_text(size = 10),  # Increase base font size
+      axis.title = element_text(size = 10),  # Increase axis title font size
+      axis.text = element_text(size = 10),   # Increase axis text font size
+      axis.line = element_line(color = "black", size = 0.8),  # Darken axis lines
+      axis.ticks = element_line(color = "black", size = 0.8) # Darken axis ticks
+      
+    )
+
+skyway_plot_avgtemp
+
+(combined_plot1 <- grid.arrange(skyway_plot_visitors, skyway_plot_avgwind, skyway_plot_maxwind, skyway_plot_avgtemp, ncol = 2)
+)
+
+ggsave(
+    filename = "skyway_plot.jpeg",  
+    plot = combined_plot1,            
+    device = "jpeg",                        
+    dpi = 300,                              
+    width = 8,                              
+    height = 6                              
+)
+
+# Figure for Other
+
+# Visitors Plot
+effect_data <- as.data.frame(effect("TotalBedM", model_Other))
+
+other_plot_visitors <- ggplot(effect_data, aes(x = TotalBedM, y = fit)) +
+    geom_line(size = 1) +  
+    geom_ribbon(aes(ymin = lower, ymax = upper), fill = "green", alpha = 0.3) +
+    labs(x = "Total Bed Tax (millions)", y = "Predicted Number of Pelicans") +
+    theme_minimal() +
+    theme(
+      text = element_text(size = 10),  # Increase base font size
+      axis.title = element_text(size = 10),  # Increase axis title font size
+      axis.text = element_text(size = 10),   # Increase axis text font size
+      axis.line = element_line(color = "black", size = 0.8),  # Darken axis lines
+      axis.ticks = element_line(color = "black", size = 0.8) # Darken axis ticks
+    
+    )
+
+other_plot_visitors
+
+# Average Wind Plot
+effect_data <- as.data.frame(effect("avgWindkm", model_Other))
+
+other_plot_avgwind <- ggplot(effect_data, aes(x = avgWindkm, y = fit)) +
+    geom_line(size = 1) +  
+    geom_ribbon(aes(ymin = lower, ymax = upper), fill = "blue", alpha = 0.3) +
+    labs(x = "Average Wind (Km)", y = "Predicted Number of Pelicans") +
+    theme_minimal() +
+    theme(
+      text = element_text(size = 10),  # Increase base font size
+      axis.title = element_text(size = 10),  # Increase axis title font size
+      axis.text = element_text(size = 10),   # Increase axis text font size
+      axis.line = element_line(color = "black", size = 0.8),  # Darken axis lines
+      axis.ticks = element_line(color = "black", size = 0.8) # Darken axis ticks
+     
+    )
+
+other_plot_avgwind
+
+# Max Wind Plot
+effect_data <- as.data.frame(effect("maxwindkm", model_Other))
+
+other_plot_maxwind <- ggplot(effect_data, aes(x = maxwindkm, y = fit)) +
+    geom_line(size = 1) +  
+    geom_ribbon(aes(ymin = lower, ymax = upper), fill = "orange", alpha = 0.3) +
+    labs(x = "Max Wind (Km)", y = "Predicted Number of Pelicans") +
+    theme_minimal() +
+    theme(
+      text = element_text(size = 10),  # Increase base font size
+      axis.title = element_text(size = 10),  # Increase axis title font size
+      axis.text = element_text(size = 10),   # Increase axis text font size
+      axis.line = element_line(color = "black", size = 0.8),  # Darken axis lines
+      axis.ticks = element_line(color = "black", size = 0.8) # Darken axis ticks
+    )
+
+other_plot_maxwind
+
+# Avg Air Temp (C) Plot
+effect_data <- as.data.frame(effect("avgAirC", model_Other))
+
+other_plot_avgtemp <- ggplot(effect_data, aes(x = avgAirC, y = fit)) +
+    geom_line(size = 1) +  
+    geom_ribbon(aes(ymin = lower, ymax = upper), fill = "purple", alpha = 0.3) +
+    labs(x = "Average Air Temperature (°C)", y = "Predicted Number of Pelicans") +
+    theme_minimal() +
+    theme(
+      text = element_text(size = 10),  # Increase base font size
+      axis.title = element_text(size = 10),  # Increase axis title font size
+      axis.text = element_text(size = 10),   # Increase axis text font size
+      axis.line = element_line(color = "black", size = 0.8),  # Darken axis lines
+      axis.ticks = element_line(color = "black", size = 0.8) # Darken axis ticks
+      
+    )
+
+other_plot_avgtemp
+
+(combined_plot2 <- grid.arrange(other_plot_visitors, other_plot_avgwind, other_plot_maxwind, other_plot_avgtemp, ncol = 2)
+)
+
+ggsave(
+    filename = "other_plot.jpeg",  
+    plot = combined_plot2,            
+    device = "jpeg",                        
+    dpi = 300,                              
+    width = 8,                              
+    height = 6                              
+)
+```
