@@ -1,0 +1,65 @@
+---
+title: "OtherPelicanStudy"
+output: html_document
+date: "2025-01-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load data
+```{r}
+data <- read.csv("IndivPelicanRJan152025.csv")
+
+```
+
+
+Setting reference variables
+```{r}
+# 0=adult already reference variable
+data$AgeCode <- as.factor(data$AgeCode)
+levels(data$AgeCode)
+
+# Convert to factor explicitly before releveling
+data$DiagnosisCode <- as.factor(data$DiagnosisCode)
+data$DiagnosisCode <- relevel(data$DiagnosisCode, ref = "5")
+levels(data$DiagnosisCode)
+
+#0=other already reference variable
+data$SkywayCode <- as.factor(data$SkywayCode)
+levels(data$SkywayCode)
+
+# Response variable as a factor
+data$DisCode <- as.factor(data$DisCode)
+levels(data$DisCode)
+```
+
+Build binomial logistic regression
+```{r}
+model <- glm(DisCode ~ AgeCode + DiagnosisCode + SkywayCode, data=data, family = binomial(link = "logit"))
+
+(summary_model <- summary(model))
+coefficients <- summary_model$coefficients
+
+
+odds_ratios <- exp(coefficients[, "Estimate"])
+ci_lower <- exp(coefficients[, "Estimate"] - 1.96 * coefficients[, "Std. Error"])
+ci_upper <- exp(coefficients[, "Estimate"] + 1.96 * coefficients[, "Std. Error"])
+
+table <- data.frame(
+  `Predictor Variable` = rownames(coefficients),
+  `Coefficient (B)` = coefficients[, "Estimate"],
+  `Standard Error (SE)` = coefficients[, "Std. Error"],
+  `z-value (Wald Statistic)` = coefficients[, "z value"],
+  `p-value` = coefficients[, "Pr(>|z|)"],
+  `Odds Ratio (OR)` = odds_ratios,
+  `95% CI (Lower)` = ci_lower,
+  `95% CI (Upper)` = ci_upper
+)
+
+write.csv(table, file = "Logistic_Regression_Table_Pelicans.csv", row.names = FALSE)
+
+```
+
+
