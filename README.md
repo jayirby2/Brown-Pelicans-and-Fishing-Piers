@@ -1,7 +1,10 @@
+# Brown Pelicans and Fishing Piers
+
+## Brown Pelicans and Fishing Piers: A Comparative Analysis of Rehabilitation Admissions from the "Longest Fishing Pier in the World" to Surrounding Areas
 
 Conducted spatial analyses in ArcGIS Pro and applied statistical modeling approaches in R, including stepwise regression, NB GLMs, and overdispersion diagnostics, to analyze Brown Pelican rehabilitator admission data. Co-authored methods and results sections of a peer-reviewed paper.
 
-*** File directory ***
+## File directory 
 
 PelicanMonthlyR8.csv: monthly pelican admission data
 
